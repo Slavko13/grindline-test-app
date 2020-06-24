@@ -79,14 +79,22 @@ public class SegmentFilterImpl implements SegmentFilter {
 
 
     private void showRightFLight(Flight flight, LocalDateTime departureTime, LocalDateTime arrivalTime) {
-        System.out.println( "Flight number - " + flight.getId()  + "\n" + "Departure time: " + departureTime + "\n" + "Arrival time: " + arrivalTime );
+        DateTimeFormatter dateTimeFormatter = getDateFormatter();
+        System.out.println( "Flight number - " + flight.getId()  + "\n" + "Departure time: " + dateTimeFormatter.format(departureTime) + "\n" + "Arrival time: " + dateTimeFormatter.format(arrivalTime) );
         System.out.println("---------------------------------------------------------------------------");
 
     }
 
     private void showTransfer(Flight flight, LocalDateTime arrivalTime, LocalDateTime departureTime) {
-        System.out.println( "Flight number - " + flight.getId()  + "\n" + "Arrival time: " + arrivalTime + "\n" + "Departure time: " + departureTime );
+        DateTimeFormatter dateTimeFormatter = getDateFormatter();
+        System.out.println( "Flight number - " + flight.getId()  + "\n" + "Arrival time: " + dateTimeFormatter.format(arrivalTime) + "\n" + "Departure time: " + dateTimeFormatter.format(departureTime)  );
         System.out.println("---------------------------------------------------------------------------");
 
     }
+
+    private DateTimeFormatter getDateFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    }
+
+
 }
