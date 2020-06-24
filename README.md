@@ -22,7 +22,7 @@
 <h5> Структура классов main </h5>
 <p>1. Класс Flight - Главный класс перелета </p> 
      <ul>Атрибуты:  
-      <li> List<Segment> </li>
+      <li> ListSegments </li>
       <li> id </li>
       </ul>
       </ul>
