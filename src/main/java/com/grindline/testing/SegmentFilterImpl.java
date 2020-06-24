@@ -16,15 +16,15 @@ public class SegmentFilterImpl implements SegmentFilter {
     }
 
     public Set<Flight> getArrivalDateLessDepartureDate(List<Flight> flights) {
-        DateTimeFormatter dateTimeFormatter = getDateFormatter();
-        Set<Flight> resultSet = new HashSet<>();
 
+        Set<Flight> resultSet = new HashSet<>();
+        List<Segment> split = new ArrayList<>();
         for (Flight flight : flights ) {
-                List<String> split = getListAfterSplit(flight);
+               split.addAll(flight.getSegments());
 
             while (split.size() > 0) {
-                LocalDateTime departureTime = LocalDateTime.parse(split.remove(0), dateTimeFormatter);
-                LocalDateTime arrivalTime = LocalDateTime.parse(split.remove(0), dateTimeFormatter);
+                LocalDateTime departureTime = split.get(0).getDepartureDate();
+                LocalDateTime arrivalTime = split.remove(0).getArrivalDate();
                 if(arrivalTime.isBefore(departureTime)) {
                     showRightFLight(flight, departureTime, arrivalTime);
                     resultSet.add(flight);
@@ -38,16 +38,15 @@ public class SegmentFilterImpl implements SegmentFilter {
 
 
     public Set<Flight> getDepartureTimeBeforeNow(List<Flight> flights) {
-        DateTimeFormatter dateTimeFormatter = getDateFormatter();
         LocalDateTime timeNow = LocalDateTime.now();
         Set<Flight> resultSet = new HashSet<>();
-
+        List<Segment> split = new ArrayList<>();
         for (Flight flight : flights ) {
-            List<String> split = getListAfterSplit(flight);
+            split.addAll(flight.getSegments());
 
             while (split.size() > 0) {
-                LocalDateTime departureTime = LocalDateTime.parse(split.remove(0), dateTimeFormatter);
-                LocalDateTime arrivalTime = LocalDateTime.parse(split.remove(0), dateTimeFormatter);
+                LocalDateTime departureTime = (split.get(0).getDepartureDate());
+                LocalDateTime arrivalTime = (split.remove(0).getArrivalDate());
                 if(departureTime.isAfter(timeNow)) {
                     showRightFLight(flight, departureTime, arrivalTime);
                     resultSet.add(flight);
@@ -59,15 +58,14 @@ public class SegmentFilterImpl implements SegmentFilter {
     }
 
     public Set<Flight> getFlightWithTransferMoreThanTwoHours(List<Flight> flights) {
-        DateTimeFormatter dateTimeFormatter = getDateFormatter();
         Set<Flight> resultSet = new HashSet<>();
-
+        List<Segment> split = new ArrayList<>();
         for (Flight flight : flights ) {
-            List<String> split = getListAfterSplit(flight);
+            split.addAll(flight.getSegments());
             if (split.size() > 2) {
                 while (split.size() > 2) {
-                    LocalDateTime arrivalTime = LocalDateTime.parse(split.remove(1), dateTimeFormatter);
-                    LocalDateTime departureTime = LocalDateTime.parse(split.remove(1), dateTimeFormatter);
+                    LocalDateTime arrivalTime = split.remove(1).getArrivalDate();
+                    LocalDateTime departureTime = split.remove(1).getDepartureDate();
                     if(departureTime.isAfter(arrivalTime.plusHours(2))) {
                         showTransfer(flight, arrivalTime, departureTime);
                         resultSet.add(flight);
@@ -84,20 +82,6 @@ public class SegmentFilterImpl implements SegmentFilter {
         System.out.println( "Flight number - " + flight.getId()  + "\n" + "Departure time: " + departureTime + "\n" + "Arrival time: " + arrivalTime );
         System.out.println("---------------------------------------------------------------------------");
 
-    }
-
-    private DateTimeFormatter getDateFormatter() {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-    }
-
-    private List<String> getListAfterSplit(Flight flight) {
-        List<String> split = new ArrayList<>();
-
-        for(int i = 0; i < flight.getSegments().size(); i++) {
-            String[] temp = flight.getSegments().get(i).toString().substring(1, flight.getSegments().get(i).toString().length() - 1).split("\\|");
-            split.addAll(Arrays.asList(temp));
-        }
-        return split;
     }
 
     private void showTransfer(Flight flight, LocalDateTime arrivalTime, LocalDateTime departureTime) {
